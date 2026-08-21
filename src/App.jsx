@@ -223,14 +223,6 @@ const ShapeDivider = ({ topColor, bottomColor, isFlipped = false, trim = true })
   );
 };
 
-// Ikon "equalizer" 3-batang — dipakai di tombol musik, meniru gaya referensi
-const SoundBars = ({ active = false, className = '' }) => (
-  <svg viewBox="0 0 24 24" className={className} fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round">
-    <line x1="7" y1="10" x2="7" y2="14" className={`eq-bar ${active ? 'playing' : ''}`} />
-    <line x1="12" y1="7" x2="12" y2="17" className={`eq-bar ${active ? 'playing' : ''}`} />
-    <line x1="17" y1="10" x2="17" y2="14" className={`eq-bar ${active ? 'playing' : ''}`} />
-  </svg>
-);
 
 // Bintang pangkat kecil — dipakai sebagai aksen sudut pengganti motif generik
 const RankStar = ({ className = '' }) => (
@@ -316,7 +308,7 @@ const GalleryTile = ({ icon: Icon, label, isVideo, delay = 0, photo, videoId }) 
         <div className="text-center px-2 py-2.5">
           <p className="font-sans text-[10px] text-[#F5EFE6]/80 tracking-wide mb-1">{label}</p>
           <p className="font-sans text-[9px] text-[#D4AF37] tracking-[0.1em] uppercase font-bold">
-            Jangan lupa Like, Comment & Subscribe!
+            Jangan lupa Like, Comment, Share & Subscribe!
           </p>
         </div>
       </div>
@@ -392,77 +384,10 @@ export default function App() {
   const idCounter = useRef(0);
   const CARD_WIDTH = 448;
 
-  // Musik latar — pakai YouTube IFrame Player disembunyikan (bukan re-upload/hosting
-  // file lagu, jadi tetap memutar langsung dari sumber resminya) supaya bisa
-  // diputar/dijeda dari tombol speaker mengambang.
-  // CATATAN PENTING: YouTube IFrame API mengganti elemen target-nya sendiri
-  // menjadi <iframe> (bukan cuma mengisi kontennya). Kalau elemen target itu
-  // dirender oleh React, React jadi bingung karena node yang dia kira masih ada
-  // sudah diganti pihak lain -> error "insertBefore ... not a child of this node".
-  // Solusinya: sediakan wrapper kosong yang direnderin React (tidak pernah
-  // punya children lewat JSX), lalu di dalamnya kita buat elemen div mentah lewat
-  // document.createElement secara imperatif untuk jadi target YouTube. Karena
-  // div mentah itu tidak pernah ada di JSX, React tidak pernah mencoba
-  // mengelola ulang node tersebut, jadi aman walau YouTube menggantinya.
-  const YT_VIDEO_ID = 'pSIHGuR_DCw';
-  const ytWrapperRef = useRef(null);
-  const ytPlayerRef = useRef(null);
-  const [isMusicPlaying, setIsMusicPlaying] = useState(false);
-  const [isPlayerReady, setIsPlayerReady] = useState(false);
-
-  useEffect(() => {
-    // Only cleanup on unmount
-    return () => {};
-  }, []);
-
-  const loadYT = () => {
-    if (window.YT && window.YT.Player) {
-      if (!ytPlayerRef.current && ytWrapperRef.current) {
-        const target = document.createElement('div');
-        ytWrapperRef.current.appendChild(target);
-        ytPlayerRef.current = new window.YT.Player(target, {
-          videoId: YT_VIDEO_ID,
-          playerVars: { autoplay: 1, controls: 0, disablekb: 1, loop: 1, playlist: YT_VIDEO_ID },
-          events: {
-            onReady: (e) => {
-              setIsPlayerReady(true);
-              e.target.playVideo();
-              setIsMusicPlaying(true);
-            },
-          },
-        });
-      }
-    } else {
-      const tag = document.createElement('script');
-      tag.src = 'https://www.youtube.com/iframe_api';
-      document.body.appendChild(tag);
-      const previousReady = window.onYouTubeIframeAPIReady;
-      window.onYouTubeIframeAPIReady = () => {
-        if (previousReady) previousReady();
-        loadYT();
-      };
-    }
-  };
-
   const handleOpenInvitation = () => {
     setIsOpened(true);
-    loadYT();
-    if (ytPlayerRef.current && ytPlayerRef.current.playVideo) {
-      ytPlayerRef.current.playVideo();
-      setIsMusicPlaying(true);
-    }
   };
 
-  const toggleMusic = () => {
-    if (!ytPlayerRef.current) return;
-    if (isMusicPlaying) {
-      ytPlayerRef.current.pauseVideo();
-      setIsMusicPlaying(false);
-    } else {
-      ytPlayerRef.current.playVideo();
-      setIsMusicPlaying(true);
-    }
-  };
 
 
   useEffect(() => {
@@ -814,16 +739,27 @@ export default function App() {
                 <HeartHandshake className="w-8 h-8 text-[#D4AF37] mx-auto mb-3" />
                 <h3 className="font-script text-4xl text-[#D4AF37] mb-6">Salurkan Donasi Terbaik Anda</h3>
 
-                <div className="bg-white rounded-xl p-5 shadow-md max-w-xs mx-auto text-left">
-                  <p className="font-sans text-[9px] text-gray-500 uppercase tracking-wide mb-1">Kerekening Baznas Provinsi Riau</p>
-                  <p className="font-serif text-xl font-bold text-[#33481F] tracking-wider mb-1">1011105992</p>
-                  <p className="font-sans text-xs text-gray-600">Badan Amil Zakat Prov. Riau</p>
+                <div className="bg-white rounded-xl p-5 shadow-md max-w-xs mx-auto text-left mb-4">
+                  <p className="font-sans text-[9px] text-gray-500 uppercase tracking-wide mb-1">Bank Riau Kepri Syariah</p>
+                  <p className="font-serif text-xl font-bold text-[#33481F] tracking-wider mb-1">8202158073</p>
+                  <p className="font-sans text-xs text-gray-600">an. BAZNAS SIAK PEDULI Kabupaten Siak</p>
+                </div>
+
+                <div className="bg-white rounded-xl p-5 shadow-md max-w-xs mx-auto text-left mb-4">
+                  <p className="font-sans text-[9px] text-gray-500 uppercase tracking-wide mb-1">Bank Syariah Indonesia</p>
+                  <p className="font-serif text-xl font-bold text-[#33481F] tracking-wider mb-1">2600000066</p>
+                  <p className="font-sans text-xs text-gray-600">an. BAZNAS SIAK PEDULI Kabupaten Siak</p>
                 </div>
 
                 <div className="mt-5 max-w-xs mx-auto bg-[#1C2814]/60 border border-[#D4AF37]/30 rounded-lg p-4 text-left">
-                  <p className="font-sans text-[10px] font-bold text-[#D4AF37] uppercase tracking-wide mb-2">Cara Transfer</p>
-                  <p className="font-sans text-xs text-gray-300 leading-relaxed">
-                    Tambahkan nominal "9" di akhir nominal transaksi sebagai kode program. Contoh: Rp 50.000 menjadi <span className="text-white font-semibold">Rp 50.009</span>.
+                  <p className="font-sans text-[10px] font-bold text-[#D4AF37] uppercase tracking-wide mb-2">Konfirmasi Donasi</p>
+                  <p className="font-sans text-xs text-gray-300 leading-relaxed mb-3">
+                    Melalui layanan A.n. Ruzki Mardhoni:<br />
+                    <span className="text-white font-semibold">0823-8588-7451</span>
+                  </p>
+                  <p className="font-sans text-[10px] font-bold text-[#D4AF37] uppercase tracking-wide mb-1">Keterangan Transfer</p>
+                  <p className="font-sans text-xs text-gray-300 leading-relaxed italic">
+                    "DONASI NTT & PALESTINA - HUT RI KE-81"
                   </p>
                 </div>
 
@@ -866,20 +802,6 @@ export default function App() {
 
           </main>
 
-          {/* Tombol musik mengambang — muncul begitu undangan dibuka */}
-          {isOpened && (
-            <button
-              onClick={toggleMusic}
-              disabled={!isPlayerReady}
-              aria-label={isMusicPlaying ? 'Matikan musik' : 'Putar musik'}
-              className="absolute bottom-5 right-5 z-[70] w-12 h-12 rounded-full bg-[#354326] border-2 border-white shadow-lg flex items-center justify-center transition-transform hover:scale-105 active:scale-95"
-            >
-              <SoundBars
-                active={isMusicPlaying}
-                className={`w-5 h-5 ${isMusicPlaying ? 'text-white' : 'text-white/50'}`}
-              />
-            </button>
-          )}
         </div>
 
         {confetti.map((c) => (
@@ -893,10 +815,6 @@ export default function App() {
             }}
           ></div>
         ))}
-
-        {/* Wrapper kosong & stabil — React tidak pernah merender children di sini lewat JSX,
-            jadi aman ditukar YouTube jadi <iframe> di baliknya tanpa bikin React bingung */}
-        <div ref={ytWrapperRef} style={{ position: 'fixed', width: 1, height: 1, bottom: 0, left: 0, opacity: 0, pointerEvents: 'none', overflow: 'hidden' }}></div>
       </div>
     </>
   );
