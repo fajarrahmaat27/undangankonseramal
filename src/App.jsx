@@ -1,7 +1,6 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
-import { MailOpen, Quote, Clock, Music2, HeartHandshake } from 'lucide-react';
-import heroImg from './assets/hero.png';
+import { MailOpen, Quote, Music2, HeartHandshake } from 'lucide-react';
 import iskImg from './assets/isk.png';
 import pangdamImg from './assets/pangdam.png';
 import tuankuTambusaiImg from './assets/tuankutambusai.webp';
@@ -206,7 +205,7 @@ function useReveal(threshold = 0.2) {
 }
 
 // Komponen Gelombang dengan Garis Emas + trim merah-putih tipis di bawahnya
-const ShapeDivider = ({ topColor, bottomColor, isFlipped = false, trim = true }) => {
+const ShapeDivider = ({ bottomColor, isFlipped = false, trim = true }) => {
   return (
     <div className="absolute bottom-[-1px] left-0 w-full overflow-hidden leading-none z-20" style={{ transform: isFlipped ? 'scaleX(-1)' : 'none' }}>
       <svg className="block w-[calc(100%+2px)] h-[70px]" viewBox="0 0 1200 120" preserveAspectRatio="none">
